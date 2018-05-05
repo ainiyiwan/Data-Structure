@@ -2,6 +2,8 @@ package zy.com.datastructure;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Button;
 
@@ -10,6 +12,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,7 +24,10 @@ public class MainActivity extends AppCompatActivity {
     Button sort;
     @BindView(R.id.insert)
     Button insert;
+    @BindView(R.id.recyclerView)
+    RecyclerView recyclerView;
     private List<User> list = new ArrayList<>();
+    private MyAdapter adapter;
 
     private String TAG1 = "TAG1";
     private String TAG2 = "TAG2";
@@ -36,12 +42,17 @@ public class MainActivity extends AppCompatActivity {
 //        long endTime = System.currentTimeMillis(); //获取结束时间
 //        System.out.println("程序运行时间： " + (startTime - endTime) + "ms");
         initData();
+        adapter = new MyAdapter(R.layout.item_recycler, list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter);
     }
 
     private void initData() {
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 2000; i++) {
+            Random random = new Random();
             String time = String.valueOf(System.currentTimeMillis());
-            String name = "张" + i;
+            String name = "张" + random.nextInt(10000);
             list.add(new User(time, name));
         }
     }
@@ -50,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     public void onSortClicked() {
         long startTime = System.currentTimeMillis();   //获取开始时间
         Collections.sort(list, new TimeComparator()); // 根据时间排序
+        adapter.setNewData(list);
         long endTime = System.currentTimeMillis(); //获取结束时间
         Log.i(TAG1, "Sort程序运行时间： " + (startTime - endTime) + "ms");
         System.out.println("按时间排序:");
@@ -68,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     public void onInsertClicked() {
         long startTime = System.currentTimeMillis();   //获取开始时间
         list.add(new User(String.valueOf(System.currentTimeMillis()), "李四"));
-        Collections.sort(list, new TimeComparator()); // 根据时间排序
+        Collections.sort(list, new PriceComparator()); // 根据时间排序
         long endTime = System.currentTimeMillis(); //获取结束时间
         Log.i(TAG1, "Insert And Sort程序运行时间： " + (startTime - endTime) + "ms");
         System.out.println("按时间排序:");
@@ -80,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         public int compare(Object object1, Object object2) {// 实现接口中的方法
             User p1 = (User) object1; // 强制转换
             User p2 = (User) object2;
-            return Long.valueOf(p1.time).compareTo(Long.valueOf(p1.time));
+            return Integer.valueOf(p1.time).compareTo(Integer.valueOf(p2.time));
         }
     }
 
@@ -89,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         public int compare(Object object1, Object object2) {// 实现接口中的方法
             User p1 = (User) object1; // 强制转换
             User p2 = (User) object2;
-            return (p1.time).compareTo(p1.time);
+            return (p1.time).compareTo(p2.time);
         }
     }
 
